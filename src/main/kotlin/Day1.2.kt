@@ -5,7 +5,7 @@ import kotlin.math.max
 fun main() {
     var result = mutableSetOf<Int>()
     var current = 0
-    File("day1.txt").forEachLine {
+    File(Utils.getResourceFile("day1.txt")!!).forEachLine {
         if (it.isEmpty()) {
             result.add(current)
             current = 0
