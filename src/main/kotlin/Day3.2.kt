@@ -1,10 +1,8 @@
 import java.io.File
-import java.util.SortedSet
+import java.util.*
 
 fun main() {
     var result = 0
-    var left: SortedSet<Int>
-    var right: SortedSet<Int>
     val calculatePriority = { a: Int ->
         when (a) {
             in 97..122 -> a - 96// a-z
@@ -14,36 +12,51 @@ fun main() {
     }
     var lines = mutableListOf<SortedSet<Int>>()
     File(Utils.getResourceFile("day3.txt")!!).forEachLine { line ->
+        // format data
         val compartments = line
             .split("")
             .filter { it.isNotEmpty() }
             .map { it.toCharArray().first().code }
             .toSortedSet()
+
         lines.add(compartments)
-        if (lines.size === 3) {
+
+        // add to 3 lines
+        if (lines.size == 3) {
+            // loop first line
             lines[0].forEach {
-                var line1It = 0
-                var line2It = 0
-                while (lines[1].size > 0) {
-                    line1It = lines[1].first()
-                    if (line1It < it) {
-                        lines[1].remove(line1It)
-                    } else {
-                        break
+                // choose smaller or equal value in rest of lines
+                lines.takeLast(lines.size - 1).forEach { sortedLine ->
+                    while (sortedLine.size > 0) {
+                        if (sortedLine.first() < it) {
+                            sortedLine.remove(sortedLine.first())
+                        } else {
+                            break
+                        }
                     }
                 }
-                while (lines[2].size > 0) {
-                    line2It = lines[2].first()
-                    if (line2It < it) {
-                        lines[2].remove(line2It)
-                    } else {
-                        break
+
+                // get first element in all rest of line
+                val firstOfAllLines = lines
+                    .takeLast(lines.size - 1)
+                    .map { lineItem ->
+                        if (lineItem.size > 0) {
+                            lineItem.first()
+                        } else {
+                            -1
+                        }
                     }
-                }
-                if ((it === line2It) && (line1It === line2It)) {
+                    .toSortedSet()
+
+                // add firs line's
+                firstOfAllLines.add(it)
+
+                // increase resule if its same
+                if (firstOfAllLines.size == 1) {
                     result += calculatePriority(it)
                 }
             }
+            // reset lines
             lines = mutableListOf()
         }
     }
