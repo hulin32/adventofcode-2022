@@ -1,5 +1,3 @@
-import java.io.File
-
 fun main() {
     var result = 0
     var left: MutableSet<Int>
@@ -11,7 +9,7 @@ fun main() {
             else -> 0
         }
     }
-    File(Utils.getResourceFile("day3.txt")!!).forEachLine { line ->
+    Utils.getResourceFile("day3.txt")!!.forEachLine { line ->
         val compartments = line
             .split("")
             .filter { it.isNotEmpty() }

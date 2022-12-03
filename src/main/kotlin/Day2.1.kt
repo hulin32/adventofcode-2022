@@ -1,5 +1,3 @@
-import java.io.File
-
 fun main() {
     var result = 0
     val competition = mapOf<String,Int>(
@@ -13,8 +11,7 @@ fun main() {
         "CY" to 2 + 0,
         "CZ" to 3 + 3,
     )
-
-    File(Utils.getResourceFile("day2.txt")!!).forEachLine {
+    Utils.getResourceFile("day2.txt")!!.forEachLine {
         val key = it.replace(" ", "")
         result += competition[key]!!
     }

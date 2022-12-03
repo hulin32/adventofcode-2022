@@ -1,6 +1,7 @@
+import java.io.File
+
 class Utils {
     companion object {
-        fun getResourceFile(path: String): String? =
-            object {}.javaClass.getResource(path)?.path
+        fun getResourceFile(path: String): File? = {}.javaClass.getResource(path)?.path?.let { File(it) }
     }
 }

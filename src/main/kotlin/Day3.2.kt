@@ -1,4 +1,3 @@
-import java.io.File
 import java.util.*
 
 fun main() {
@@ -11,7 +10,7 @@ fun main() {
         }
     }
     var lines = mutableListOf<SortedSet<Int>>()
-    File(Utils.getResourceFile("day3.txt")!!).forEachLine { line ->
+    Utils.getResourceFile("day3.txt")!!.forEachLine { line ->
         // format data
         val compartments = line
             .split("")
