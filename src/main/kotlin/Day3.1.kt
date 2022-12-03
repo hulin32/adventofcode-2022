@@ -2,21 +2,29 @@ import java.io.File
 
 fun main() {
     var result = 0
-    val competition = mapOf<String,Int>(
-        "AX" to 3 + 0,
-        "AY" to 1 + 3,
-        "AZ" to 2 + 6,
-        "BX" to 1 + 0,
-        "BY" to 2 + 3,
-        "BZ" to 3 + 6,
-        "CX" to 2 + 0,
-        "CY" to 3 + 3,
-        "CZ" to 1 + 6,
-    )
+    var left: MutableSet<Int>
+    var right: MutableSet<Int>
+    val calculatePriority = { a: Int ->
+        when (a) {
+            in 97..122 -> a - 96// a-z
+            in 65..90 -> a - 64 + 26 // A-Z
+            else -> 0
+        }
+    }
+    File(Utils.getResourceFile("day3.txt")!!).forEachLine { line ->
+        val compartments = line
+            .split("")
+            .filter { it.isNotEmpty() }
+            .map { it.toCharArray().first().code }
+        val halfLength = compartments.size / 2
+        left = compartments.take(halfLength).toMutableSet()
+        right = compartments.takeLast(halfLength).toMutableSet()
 
-    File(Utils.getResourceFile("day2.txt")!!).forEachLine {
-        val key = it.replace(" ", "")
-        result += competition[key]!!
+        left.forEach { num ->
+            if (right.contains(num)) {
+                result += calculatePriority(num)
+            }
+        }
     }
     println(result)
 }
