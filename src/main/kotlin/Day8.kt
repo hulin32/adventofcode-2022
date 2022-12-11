@@ -1,136 +1,138 @@
-import kotlin.math.min
-
-class Node(val dirname: String) {
-    var previous: Node? = null
-    var total: Long = 0
-    var children = mutableListOf<Node>()
-    var childrenTotal: Long = 0
-    var values = mutableMapOf<String, Long>()
-}
-
-abstract class DirectoryItem(val name: String) {
-    abstract fun sizeOf(): Int
-}
-
-data class Folder(val n:String, val parent: DirectoryItem?) : DirectoryItem(n) {
-    var contents: MutableList<DirectoryItem> = mutableListOf()
-    override fun sizeOf(): Int {
-        var result = 0
-        for (item in contents) {
-            result += item.sizeOf()
-        }
-        return result
-    }
-}
-
-data class File(val n: String, val size: Int, val parent: DirectoryItem) : DirectoryItem(n) {
-    override fun sizeOf(): Int {
-        return size
-    }
-}
+import kotlin.math.max
 
 fun main() {
-    val input = Utils.getResourceFile("day7.txt")!!
+    val input = Utils.getResourceFile("day8.txt")!!
+    val graph = input
+        .readLines()
+        .map {
+            it
+                .split("")
+                .filter { c -> c.isNotEmpty() }
+                .map { c -> c.toInt() }
+        }
 
-    fun generateNodes(): List<Node> {
-        var rootNode = Node("root")
-        var currentNode = rootNode
-        var nodeMap = mutableMapOf<String, Node>()
-        val cdCmd = Regex("\\$ cd (?<dirName>(/|.)+)")
-        val dirLine = Regex("dir (?<dirName>.+)")
-        val fileLine = Regex("(?<fileSize>\\d+) (?<fileName>.+)")
-
-        // build tree
-        input.useLines {
-            it.forEach { line ->
-                var folderName = ""
-                var folderNode = currentNode
-                while (folderNode.previous != null) {
-                    folderName = "${folderNode.dirname}-${folderName}"
-                    folderNode = folderNode.previous!!
-                }
-                when {
-                    cdCmd.matches(line) -> {
-                        val dirName = cdCmd.matchEntire(line)?.groups?.get("dirName")?.value!!
-                        when (dirName) {
-                            ".." -> currentNode = currentNode.previous!!
-                            else -> {
-                                if (nodeMap["${folderName}-${dirName}"] == null) {
-                                    var parentNde = currentNode
-                                    currentNode = Node(dirName)
-                                    currentNode.previous = parentNde
-                                    parentNde.children.add(currentNode)
-                                    nodeMap["${folderName}-${dirName}"] = currentNode
-                                } else {
-                                    currentNode = nodeMap["${folderName}-${dirName}"]!!
-                                }
-                            }
-                        }
-                    }
-                    dirLine.matches(line) -> {
-                        val dirName = dirLine.matchEntire(line)?.groups?.get("dirName")?.value!!
-                        if (nodeMap["${folderName}-${dirName}"] == null) {
-                            var tmpNode = Node(dirName)
-                            tmpNode.previous = currentNode
-                            currentNode.children.add(tmpNode)
-                            nodeMap["${folderName}-${dirName}"] = tmpNode
-                        }
-                    }
-
-                    fileLine.matches(line) -> {
-                        val fileSize = fileLine.matchEntire(line)?.groups?.get("fileSize")?.value!!
-                        val fileName = fileLine.matchEntire(line)?.groups?.get("fileName")?.value!!
-                        currentNode.total += fileSize.toLong()
-                        currentNode.values.put(fileName, fileSize.toLong())
-                    }
+    fun part1(): Int {
+        var viewed = mutableMapOf<String, Boolean>()
+        // left -> right
+        for (rowIdx in graph.indices) {
+            viewed["$rowIdx-0"] = true
+            var highest = graph[rowIdx][0]
+            for (columIdx in graph[0].indices) {
+                if (graph[rowIdx][columIdx] > highest) {
+                    highest = graph[rowIdx][columIdx]
+                    viewed["$rowIdx-$columIdx"] = true
                 }
             }
         }
-        var tmpNodes = ArrayDeque(rootNode.children)
-        var nodes = ArrayDeque<Node>()
-        // calculate all folder size
-        while (true) {
-            var tmpNode = tmpNodes.removeFirst()
-            nodes.addFirst(tmpNode)
-            tmpNode.children.forEach {
-                tmpNodes.addLast(it)
+        // right -> left
+        for (rowIdx in graph.indices) {
+            viewed["$rowIdx-${graph[0].size - 1}"] = true
+            var highest = graph[rowIdx][graph[0].size - 1]
+            for (columIdx in graph[0].indices.reversed()) {
+                if (graph[rowIdx][columIdx] > highest) {
+                    highest = graph[rowIdx][columIdx]
+                    viewed["$rowIdx-$columIdx"] = true
+                }
             }
-            if (tmpNodes.size == 0) {
+        }
+
+        // top -> bottom
+        for (columIdx in graph[0].indices) {
+            viewed["0-$columIdx"] = true
+            var highest = graph[0][columIdx]
+            for (rowIdx in graph.indices) {
+                if (graph[rowIdx][columIdx] > highest) {
+                    highest = graph[rowIdx][columIdx]
+                    viewed["$rowIdx-$columIdx"] = true
+                }
+            }
+        }
+
+        // bottom -> top
+        for (columIdx in graph[0].indices) {
+            viewed["${graph.size - 1}-$columIdx"] = true
+            var highest = graph[graph.size - 1][columIdx]
+            for (rowIdx in graph.indices.reversed()) {
+                if (graph[rowIdx][columIdx] > highest) {
+                    highest = graph[rowIdx][columIdx]
+                    viewed["$rowIdx-$columIdx"] = true
+                }
+            }
+        }
+        return viewed.size
+    }
+
+    fun leftToRight(rIdx: Int, cIdx: Int): Int {
+        var highest = graph[rIdx][cIdx]
+        var stepTo = cIdx
+        for (columIdx in cIdx + 1 until graph[0].size) {
+            if (graph[rIdx][columIdx] >= highest) {
+                stepTo = columIdx
                 break
             }
         }
-        return nodes
-            .map {
-                it.previous?.let { preNode ->
-                    preNode.childrenTotal += it.childrenTotal + it.total
-                }
-                it
-            }
+        if (stepTo == cIdx) {
+           return graph[0].size - cIdx - 1
+        }
+        return stepTo - cIdx
     }
 
-    fun part1(): Long {
-        var nodes = generateNodes()
-        return nodes
-            .filter {
-                it.childrenTotal + it.total <= 100000
-            }.sumOf {
-                it.childrenTotal + it.total
-            }
-    }
-    fun part2(): Long {
-        var nodes = generateNodes()
-        val totalUsed = nodes[nodes.lastIndex].childrenTotal + nodes[nodes.lastIndex].total
-        val needSpace = 30000000 - (70000000 - totalUsed)
-        var needDeletedSpace: Long = 70000000
-        nodes.forEach {
-            if ((it.childrenTotal + it.total) >= needSpace) {
-                needDeletedSpace = min(needDeletedSpace, it.childrenTotal + it.total)
+    fun rightToLeft(rIdx: Int, cIdx: Int): Int {
+        var highest = graph[rIdx][cIdx]
+        var stepTo = cIdx
+        for (columIdx in cIdx - 1 downTo 0) {
+            if (graph[rIdx][columIdx] >= highest) {
+                stepTo = columIdx
+                break
             }
         }
-        return needDeletedSpace
+        if (stepTo == cIdx) {
+            return cIdx
+        }
+        return cIdx - stepTo
     }
 
-    println(part1())
+    fun topToBottom(rIdx: Int, cIdx: Int): Int {
+        var highest = graph[rIdx][cIdx]
+        var stepTo = rIdx
+        for (rowIdx in rIdx + 1 until graph.size) {
+            if (graph[rowIdx][cIdx] >= highest) {
+                stepTo = rowIdx
+                break
+            }
+        }
+        if (stepTo == rIdx) {
+            return graph.size - rIdx  - 1
+        }
+        return stepTo - rIdx
+    }
+
+    fun bottomToTop(rIdx: Int, cIdx: Int): Int {
+        var highest = graph[rIdx][cIdx]
+        var stepTo = rIdx
+        for (rowIdx in rIdx - 1 downTo 0) {
+            if (graph[rowIdx][cIdx] >= highest) {
+                stepTo = rowIdx
+                break
+            }
+        }
+        if (stepTo == rIdx) {
+            return rIdx
+        }
+        return rIdx - stepTo
+    }
+
+    fun part2(): Int {
+        var result = 0
+        graph.forEachIndexed { rIdx, it ->
+            it.forEachIndexed { cIdx, _  ->
+                result = max(result, leftToRight(rIdx, cIdx) * rightToLeft(rIdx, cIdx) * topToBottom(rIdx, cIdx) * bottomToTop(rIdx, cIdx))
+            }
+        }
+        return result
+    }
+
+//    println(part1())
     println(part2())
 }
 
