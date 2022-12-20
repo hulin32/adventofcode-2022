@@ -1,7 +1,7 @@
 import kotlin.math.abs
 
 fun main() {
-    val input = Utils.getResourceFile("day9.txt")!!
+    val input = getResourceFile("day9.txt")!!
 
     fun moveTail(h: Pair<Int, Int>, t: Pair<Int, Int>): Pair<Int, Int> {
         var result: Pair<Int, Int> = t

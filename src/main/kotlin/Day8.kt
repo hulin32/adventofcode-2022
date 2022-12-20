@@ -1,7 +1,7 @@
 import kotlin.math.max
 
 fun main() {
-    val input = Utils.getResourceFile("day8.txt")!!
+    val input = getResourceFile("day8.txt")!!
     val graph = input
         .readLines()
         .map {

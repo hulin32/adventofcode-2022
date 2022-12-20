@@ -1,5 +1,5 @@
 fun main() {
-    val input = Utils.getResourceFile("day10.txt")!!
+    val input = getResourceFile("day10.txt")!!
 
     fun part1(): Int {
         var result = 1

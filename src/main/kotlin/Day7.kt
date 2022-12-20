@@ -9,7 +9,7 @@ class Node(val dirname: String) {
 }
 
 fun main() {
-    val input = Utils.getResourceFile("day7.txt")!!
+    val input = getResourceFile("day7.txt")!!
 
     fun generateNodes(): List<Node> {
         var rootNode = Node("root")

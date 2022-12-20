@@ -1,7 +1,7 @@
 enum class SEQUENCE { FRONT, BACK }
 
 fun main() {
-    val input = Utils.getResourceFile("day5.txt")!!
+    val input = getResourceFile("day5.txt")!!
     fun filterInput(num: Int): MutableList<ArrayDeque<Char>> {
         val stack = MutableList(num) { ArrayDeque<Char>() }
         input.useLines {

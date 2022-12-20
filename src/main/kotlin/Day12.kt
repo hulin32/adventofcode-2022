@@ -4,7 +4,7 @@ fun main() {
     data class Point(val x: Int, val y: Int)
     data class Step(val point: Point, var pathLength: Int)
 
-    val input = Utils.getResourceFile("day12.txt")!!
+    val input = getResourceFile("day12.txt")!!
 
     fun parseInput(file: File): Triple<Step, Step, List<List<Char>>> {
         var start = Step(Point(0, 0), 0)

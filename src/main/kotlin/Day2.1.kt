@@ -11,7 +11,7 @@ fun main() {
         "CY" to 2 + 0,
         "CZ" to 3 + 3,
     )
-    Utils.getResourceFile("day2.txt")!!.forEachLine {
+    getResourceFile("day2.txt")!!.forEachLine {
         val key = it.replace(" ", "")
         result += competition[key]!!
     }

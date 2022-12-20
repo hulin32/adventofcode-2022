@@ -1,18 +1,8 @@
 import kotlin.math.max
 import kotlin.math.min
 
-data class Point(var x: Int, var y: Int) {
-    operator fun plus(p: Point): Point {
-        return Point(x + p.x, y + p.y)
-    }
-}
-
-fun <T> List<List<T>>.get(p: Point): T {
-    return this[p.x][p.y]
-}
-
 fun main() {
-    val input = Utils.getResourceFile("day14.txt")!!
+    val input = getResourceFile("day14.txt")!!
     val grid = MutableList(1000) { MutableList(1000) { true } }
     val rocks = input
         .readLines()

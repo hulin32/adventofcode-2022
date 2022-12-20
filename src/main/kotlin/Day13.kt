@@ -43,7 +43,7 @@ operator fun JsonArray.compareTo(other: JsonArray): Int {
 fun dividerPacket(number: Int): JsonArray = JsonArray(listOf(JsonArray(listOf(JsonPrimitive(number)))))
 
 fun main() {
-    val input = Utils.getResourceFile("day13.txt")!!
+    val input = getResourceFile("day13.txt")!!
 
     var parseInput = {
         input

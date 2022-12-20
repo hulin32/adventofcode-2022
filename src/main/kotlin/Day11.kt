@@ -1,5 +1,5 @@
 fun main() {
-    val input = Utils.getResourceFile("day11.txt")!!
+    val input = getResourceFile("day11.txt")!!
     class Monkey(
         val items: ArrayDeque<Long>,
         val operation: Long.(Long) -> Long,

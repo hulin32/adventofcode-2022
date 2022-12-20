@@ -9,7 +9,7 @@ fun main() {
             else -> 0
         }
     }
-    Utils.getResourceFile("day3.txt")!!.forEachLine { line ->
+    getResourceFile("day3.txt")!!.forEachLine { line ->
         val compartments = line
             .split("")
             .filter { it.isNotEmpty() }

@@ -1,5 +1,5 @@
 fun main() {
-    val input = Utils.getResourceFile("day6.txt")!!
+    val input = getResourceFile("day6.txt")!!
 
     fun findDistinctCharacters(num: Int): Int {
         val text = input.readText()

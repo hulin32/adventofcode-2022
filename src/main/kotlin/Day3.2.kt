@@ -10,7 +10,7 @@ fun main() {
         }
     }
     var lines = mutableListOf<SortedSet<Int>>()
-    Utils.getResourceFile("day3.txt")!!.forEachLine { line ->
+    getResourceFile("day3.txt")!!.forEachLine { line ->
         // format data
         val compartments = line
             .split("")

@@ -1,7 +1,7 @@
 import java.util.*
 
 fun main() {
-    val input = Utils.getResourceFile("day4.txt")!!
+    val input = getResourceFile("day4.txt")!!
     fun part1(): Int {
         return input
             .readLines()

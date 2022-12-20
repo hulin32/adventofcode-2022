@@ -1,7 +1,7 @@
 fun main() {
     var result = mutableSetOf<Int>()
     var current = 0
-    Utils.getResourceFile("day1.txt")!!.forEachLine {
+    getResourceFile("day1.txt")!!.forEachLine {
         if (it.isEmpty()) {
             result.add(current)
             current = 0
