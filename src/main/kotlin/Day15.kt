@@ -46,7 +46,7 @@ fun main() {
         val targetY = 2000000
         val coveredRanges = coveredRanges(targetY)
 
-        val invalidLocations = coveredRanges.flatMap { it }.distinct()
+        val invalidLocations = coveredRanges.flatten().distinct()
         val beacons = sensors.map { it.beaconLoc }.filter { it.y == targetY }.distinct()
 
         return invalidLocations.size - beacons.size.toLong()
